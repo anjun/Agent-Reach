@@ -1,233 +1,185 @@
----
-name: agent-reach
-description: >
-  Give your AI agent eyes to see the entire internet.
-  Search and read 16 platforms: Twitter/X, Reddit, YouTube, GitHub, Bilibili,
-  XiaoHongShu, Douyin, Weibo, WeChat Articles, Xiaoyuzhou Podcast, LinkedIn,
-  Instagram, V2EX, RSS, Exa web search, and any web page.
-  Zero config for 8 channels. Use when user asks to search, read, or interact
-  on any supported platform, shares a URL, or asks to search the web.
-  Triggers: "搜推特", "搜小红书", "看视频", "搜一下", "上网搜", "帮我查",
-  "search twitter", "youtube transcript", "search reddit", "read this link",
-  "B站", "bilibili", "抖音视频", "微信文章", "公众号", "微博", "V2EX",
-  "小宇宙", "播客", "podcast", "web search", "research", "帮我安装".
-metadata:
-  openclaw:
-    homepage: https://github.com/Panniantong/Agent-Reach
+# Agent Reach for Surfin Claw
+
+给你的 AI Agent 一键装上互联网能力 —— 支持抓取 Twitter/X、Reddit、YouTube、GitHub、B站、小红书等 16+ 平台。
+
+**版本**: 1.0.0  
+**适配**: Surfin Claw  
+**源码**: https://github.com/anjun/Agent-Reach
+
 ---
 
-# Agent Reach — Usage Guide
+## 触发词 (Triggers)
 
-Upstream tools for 13+ platforms. Call them directly.
+当用户说以下关键词时，Agent 应自动调用 Agent Reach：
 
-Run `agent-reach doctor` to check which channels are available.
+- **搜索类**: "搜一下", "搜索", "上网搜", "帮我查", "查一下", "web search", "search", "research"
+- **视频类**: "看视频", "YouTube", "B站", "bilibili", "抖音", "douyin", "视频字幕"
+- **社交类**: "推特", "Twitter", "X", "小红书", "微博", "Reddit", "V2EX"
+- **开发类**: "GitHub", "看仓库", "搜代码", "issue"
+- **文章类**: "公众号", "微信文章", "知乎", "网页内容", "read this link"
+- **播客类**: "小宇宙", "播客", "podcast", "音频转录"
 
-## ⚠️ Workspace Rules
+---
 
-**Never create files in the agent workspace.** Use `/tmp/` for temporary output and `~/.agent-reach/` for persistent data.
+## 功能
 
-## Web — Any URL
+- 🌐 **网页** - 阅读任意网页内容
+- 📺 **YouTube/B站** - 提取视频字幕和元数据
+- 🐦 **Twitter/X** - 读取推文、搜索、浏览时间线
+- 📖 **Reddit** - 搜索和阅读帖子
+- 📦 **GitHub** - 搜索仓库、查看 Issue/PR
+- 📕 **小红书** - 搜索笔记、查看详情
+- 🎵 **抖音** - 解析视频信息
+- 💬 **微信公众号** - 搜索和阅读文章
+- 🎙️ **小宇宙播客** - 音频转文字
+- 💼 **LinkedIn** - 查看个人资料
+- 📰 **微博/V2EX/RSS** - 社交媒体和订阅源
 
-```bash
-curl -s "https://r.jina.ai/URL"
-```
+---
 
-## Web Search (Exa)
-
-```bash
-mcporter call 'exa.web_search_exa(query: "query", numResults: 5)'
-mcporter call 'exa.get_code_context_exa(query: "code question", tokensNum: 3000)'
-```
-
-## Twitter/X (xreach)
-
-```bash
-xreach search "query" -n 10 --json          # search
-xreach tweet URL_OR_ID --json                # read tweet (supports /status/ and /article/ URLs)
-xreach tweets @username -n 20 --json         # user timeline
-xreach thread URL_OR_ID --json               # full thread
-```
-
-## YouTube (yt-dlp)
+## 命令
 
 ```bash
-yt-dlp --dump-json "URL"                     # video metadata
-yt-dlp --write-sub --write-auto-sub --sub-lang "zh-Hans,zh,en" --skip-download -o "/tmp/%(id)s" "URL"
-                                             # download subtitles, then read the .vtt file
-yt-dlp --dump-json "ytsearch5:query"         # search
+# 检测所有渠道状态
+agent-reach doctor
+
+# 配置特定平台
+agent-reach configure twitter      # 配置 Twitter
+agent-reach configure xiaohongshu  # 配置小红书
+agent-reach configure proxy        # 配置代理
+
+# 安装/更新工具
+agent-reach install
+agent-reach update
 ```
 
-## Bilibili (yt-dlp)
+---
+
+## 使用示例
+
+直接告诉 Agent 你的需求，它会自动调用合适的工具：
+
+- "帮我看看这个 YouTube 视频讲了什么"
+- "搜一下 Twitter 上关于 AI 的讨论"
+- "看看这个 GitHub 仓库是做什么的"
+- "小红书上有哪些关于旅游的笔记"
+- "这个网页的主要内容是什么"
+- "把这篇公众号文章转成 Markdown"
+
+---
+
+## 技术实现
+
+Agent Reach 是一个脚手架工具，实际调用以下上游工具：
+
+| 平台 | 工具 | 说明 |
+|------|------|------|
+| 网页 | Jina Reader | 免费，无需 API Key |
+| YouTube/B站 | yt-dlp | 148K Star，支持 1800+ 站点 |
+| Twitter/X | xreach | Cookie 登录，免费 |
+| Reddit | Exa/直接 API | 搜索免费，读取需代理 |
+| GitHub | gh CLI | 官方工具 |
+| 小红书/抖音/LinkedIn | mcporter (MCP) | 通过 MCP 服务调用 |
+| 微信公众号 | miku_ai + Camoufox | 搜索+全文阅读 |
+| 小宇宙播客 | groq-whisper | 音频转录 |
+| V2EX | 公开 API | 无需认证 |
+
+---
+
+## 安装
 
 ```bash
-yt-dlp --dump-json "https://www.bilibili.com/video/BVxxx"
-yt-dlp --write-sub --write-auto-sub --sub-lang "zh-Hans,zh,en" --convert-subs vtt --skip-download -o "/tmp/%(id)s" "URL"
+pip install agent-reach
 ```
 
-> Server IPs may get 412. Use `--cookies-from-browser chrome` or configure proxy.
-
-## Reddit
+或从源码安装：
 
 ```bash
-curl -s "https://www.reddit.com/r/SUBREDDIT/hot.json?limit=10" -H "User-Agent: agent-reach/1.0"
-curl -s "https://www.reddit.com/search.json?q=QUERY&limit=10" -H "User-Agent: agent-reach/1.0"
+git clone https://github.com/anjun/Agent-Reach.git
+cd Agent-Reach
+pip install -e .
 ```
 
-> Server IPs may get 403. Search via Exa instead, or configure proxy.
+---
 
-## GitHub (gh CLI)
+## 依赖
 
+- Python 3.10+
+- Node.js（用于 xreach、mcporter）
+- yt-dlp（视频下载）
+- gh CLI（GitHub 操作）
+
+---
+
+## 配置
+
+配置文件位于 `~/.agent-reach/config.yaml`
+
+```yaml
+# Twitter 认证
+auth:
+  twitter_auth_token: your_token
+  twitter_ct0: your_ct0
+
+# 代理（服务器部署时需要）
+proxy: http://your-proxy:port
+
+# Groq API Key（小宇宙播客转录用）
+groq_api_key: your_key
+```
+
+---
+
+## 故障排查 (Troubleshooting)
+
+### agent-reach doctor 显示某个渠道不可用
+
+| 问题 | 解决方案 |
+|------|----------|
+| xreach 未安装 | `npm install -g xreach-cli` |
+| mcporter 未安装 | `npm install -g mcporter` |
+| yt-dlp 未安装 | `pip install yt-dlp` |
+| gh CLI 未安装 | `brew install gh` 或从官网下载 |
+
+### YouTube/B站 403 错误
+
+服务器 IP 可能被屏蔽，解决方案：
+- 本地电脑无需额外配置
+- 服务器部署时配置代理：`agent-reach configure proxy`
+
+### Twitter 403/无法读取
+
+需要配置认证信息：
+1. 浏览器登录 Twitter
+2. 使用 Cookie-Editor 插件导出 Cookie
+3. 告诉 Agent "帮我配置 Twitter"
+
+### 小红书无法访问
+
+同 Twitter，需要导出 Cookie 配置
+
+### 微信公众号读取失败
+
+微信公众号有叝爬机制，请使用：
 ```bash
-gh search repos "query" --sort stars --limit 10
-gh repo view owner/repo
-gh search code "query" --language python
-gh issue list -R owner/repo --state open
-gh issue view 123 -R owner/repo
+cd ~/.agent-reach/tools/wechat-article-for-ai && python3 main.py "文章URL"
 ```
 
-## 小红书 / XiaoHongShu (mcporter)
+---
 
-```bash
-mcporter call 'xiaohongshu.search_feeds(keyword: "query")'
-mcporter call 'xiaohongshu.get_feed_detail(feed_id: "xxx", xsec_token: "yyy")'
-mcporter call 'xiaohongshu.get_feed_detail(feed_id: "xxx", xsec_token: "yyy", load_all_comments: true)'
-mcporter call 'xiaohongshu.publish_content(title: "标题", content: "正文", images: ["/path/img.jpg"], tags: ["tag"])'
-```
+## 安全说明
 
-> Requires login. Use Cookie-Editor to import cookies.
+- Cookie 和 Token 只存储在本地 `~/.agent-reach/`，不上传
+- 配置文件权限设置为 600（仅所有者可读写）
+- 代码完全开源，可随时审查
 
-## 抖音 / Douyin (mcporter)
+---
 
-```bash
-mcporter call 'douyin.parse_douyin_video_info(share_link: "https://v.douyin.com/xxx/")'
-mcporter call 'douyin.get_douyin_download_link(share_link: "https://v.douyin.com/xxx/")'
-```
+## Surfin Claw 适配说明
 
-> No login needed.
+本版本针对 Surfin Claw 进行了适配：
+- ✅ 使用 Surfin Claw 内置工具（bash/webfetch/websearch）
+- ✅ 技能目录自动识别 `~/.surfin-claw/skills/`
+- ✅ 移除 OpenClaw 专属配置依赖
 
-## 微信公众号 / WeChat Articles
-
-**Search** (miku_ai):
-```python
-python3 -c "
-import asyncio
-from miku_ai import get_wexin_article
-async def s():
-    for a in await get_wexin_article('query', 5):
-        print(f'{a[\"title\"]} | {a[\"url\"]}')
-asyncio.run(s())
-"
-```
-
-**Read** (Camoufox — bypasses WeChat anti-bot):
-```bash
-cd ~/.agent-reach/tools/wechat-article-for-ai && python3 main.py "https://mp.weixin.qq.com/s/ARTICLE_ID"
-```
-
-> WeChat articles cannot be read with Jina Reader or curl. Must use Camoufox.
-
-## 小宇宙播客 / Xiaoyuzhou Podcast (groq-whisper + ffmpeg)
-
-```bash
-# 转录单集播客（输出文本到 /tmp/）
-~/.agent-reach/tools/xiaoyuzhou/transcribe.sh "https://www.xiaoyuzhoufm.com/episode/EPISODE_ID"
-```
-
-> 需要 ffmpeg + Groq API Key（免费）。  
-> 配置 Key：`agent-reach configure groq-key YOUR_KEY`  
-> 首次运行需安装工具：`agent-reach install --env=auto`  
-> 运行 `agent-reach doctor` 检查状态。  
-> 输出 Markdown 文件默认保存到 `/tmp/`。
-
-
-## LinkedIn (mcporter)
-
-```bash
-mcporter call 'linkedin.get_person_profile(linkedin_url: "https://linkedin.com/in/username")'
-mcporter call 'linkedin.search_people(keyword: "AI engineer", limit: 10)'
-```
-
-Fallback: `curl -s "https://r.jina.ai/https://linkedin.com/in/username"`
-
-## V2EX (public API)
-
-```bash
-# 热门主题
-curl -s "https://www.v2ex.com/api/topics/hot.json" -H "User-Agent: agent-reach/1.0"
-
-# 节点主题（node_name 如 python、tech、jobs、qna）
-curl -s "https://www.v2ex.com/api/topics/show.json?node_name=python&page=1" -H "User-Agent: agent-reach/1.0"
-
-# 主题详情（topic_id 从 URL 获取，如 https://www.v2ex.com/t/1234567）
-curl -s "https://www.v2ex.com/api/topics/show.json?id=TOPIC_ID" -H "User-Agent: agent-reach/1.0"
-
-# 主题回复
-curl -s "https://www.v2ex.com/api/replies/show.json?topic_id=TOPIC_ID&page=1" -H "User-Agent: agent-reach/1.0"
-
-# 用户信息
-curl -s "https://www.v2ex.com/api/members/show.json?username=USERNAME" -H "User-Agent: agent-reach/1.0"
-```
-
-Python 调用示例（V2EXChannel）：
-
-```python
-from agent_reach.channels.v2ex import V2EXChannel
-
-ch = V2EXChannel()
-
-# 获取热门帖子（默认 20 条）
-# 返回字段：id, title, url, replies, node_name, node_title, content(前200字), created
-topics = ch.get_hot_topics(limit=10)
-for t in topics:
-    print(f"[{t['node_title']}] {t['title']} ({t['replies']} 回复) {t['url']}")
-    print(f"  id={t['id']} created={t['created']}")
-
-# 获取指定节点的最新帖子
-# 返回字段：id, title, url, replies, node_name, node_title, content(前200字), created
-node_topics = ch.get_node_topics("python", limit=5)
-for t in node_topics:
-    print(t["id"], t["title"], t["url"])
-
-# 获取单个帖子详情 + 回复列表
-# 返回字段：id, title, url, content, replies_count, node_name, node_title,
-#           author, created, replies (list of {author, content, created})
-topic = ch.get_topic(1234567)
-print(topic["title"], "—", topic["author"])
-for r in topic["replies"]:
-    print(f"  {r['author']}: {r['content'][:80]}")
-
-# 获取用户信息
-# 返回字段：id, username, url, website, twitter, psn, github, btc, location, bio, avatar, created
-user = ch.get_user("Livid")
-print(user["username"], user["bio"], user["github"])
-
-# 搜索（V2EX 公开 API 不支持，会返回说明信息）
-result = ch.search("asyncio")
-print(result[0]["error"])  # 提示使用站内搜索或 Exa channel
-```
-
-> No auth required. Results are public JSON. V2EX 节点名见 https://www.v2ex.com/planes
-
-## RSS (feedparser)
-
-## RSS
-
-```python
-python3 -c "
-import feedparser
-for e in feedparser.parse('FEED_URL').entries[:5]:
-    print(f'{e.title} — {e.link}')
-"
-```
-
-## Troubleshooting
-
-- **Channel not working?** Run `agent-reach doctor` — shows status and fix instructions.
-- **Twitter fetch failed?** Ensure `undici` is installed: `npm install -g undici`. Configure proxy: `agent-reach configure proxy URL`.
-
-## Setting Up a Channel ("帮我配 XXX")
-
-If a channel needs setup (cookies, Docker, etc.), fetch the install guide:
-https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/install.md
-
-User only provides cookies. Everything else is your job.
+原项目：https://github.com/Panniantong/Agent-Reach
