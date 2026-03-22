@@ -1,10 +1,30 @@
 # Agent Reach for Surfin Claw
 
-给你的 AI Agent 一键装上互联网能力 —— 支持抓取 Twitter/X、Reddit、YouTube、GitHub、B站、小红书等 16+ 平台。
+**给你的 AI Agent 一键装上互联网能力** —— 支持抓取 Twitter/X、Reddit、YouTube、GitHub、B站、小红书等 16+ 平台。
 
 **版本**: 1.0.0  
 **适配**: Surfin Claw  
 **源码**: https://github.com/anjun/Agent-Reach
+
+---
+
+## 技能说明
+
+Agent Reach 是一个互联网数据获取工具，让你的 AI Agent 能够读取和搜索各种平台的内容，无需 API Key 或付费。
+
+### 支持的平台
+
+- 🌐 **网页** - 阅读任意网页内容 (Jina Reader)
+- 📺 **YouTube/B站** - 提取视频字幕和元数据 (yt-dlp)
+- 🐦 **Twitter/X** - 读取推文、搜索、浏览时间线 (xreach)
+- 📖 **Reddit** - 搜索和阅读帖子 (Exa/直接 API)
+- 📦 **GitHub** - 搜索仓库、查看 Issue/PR (gh CLI)
+- 📕 **小红书** - 搜索笔记、查看详情 (mcporter)
+- 🎵 **抖音** - 解析视频信息 (mcporter)
+- 💬 **微信公众号** - 搜索和阅读文章 (miku_ai)
+- 🎙️ **小宇宙播客** - 音频转文字 (groq-whisper)
+- 💼 **LinkedIn** - 查看个人资料 (mcporter)
+- 📰 **微博/V2EX/RSS** - 社交媒体和订阅源
 
 ---
 
@@ -18,22 +38,6 @@
 - **开发类**: "GitHub", "看仓库", "搜代码", "issue"
 - **文章类**: "公众号", "微信文章", "知乎", "网页内容", "read this link"
 - **播客类**: "小宇宙", "播客", "podcast", "音频转录"
-
----
-
-## 功能
-
-- 🌐 **网页** - 阅读任意网页内容
-- 📺 **YouTube/B站** - 提取视频字幕和元数据
-- 🐦 **Twitter/X** - 读取推文、搜索、浏览时间线
-- 📖 **Reddit** - 搜索和阅读帖子
-- 📦 **GitHub** - 搜索仓库、查看 Issue/PR
-- 📕 **小红书** - 搜索笔记、查看详情
-- 🎵 **抖音** - 解析视频信息
-- 💬 **微信公众号** - 搜索和阅读文章
-- 🎙️ **小宇宙播客** - 音频转文字
-- 💼 **LinkedIn** - 查看个人资料
-- 📰 **微博/V2EX/RSS** - 社交媒体和订阅源
 
 ---
 
@@ -87,6 +91,22 @@ Agent Reach 是一个脚手架工具，实际调用以下上游工具：
 ---
 
 ## 安装
+
+### Surfin Claw 用户
+
+```
+帮我安装技能：https://github.com/anjun/Agent-Reach
+```
+
+或手动安装：
+
+```bash
+mkdir -p ~/.surfin-claw/skills/agent-reach
+curl -o ~/.surfin-claw/skills/agent-reach/SKILL.md \
+  https://raw.githubusercontent.com/anjun/Agent-Reach/main/agent_reach/skill/SKILL.md
+```
+
+### 其他平台
 
 ```bash
 pip install agent-reach
@@ -160,7 +180,7 @@ groq_api_key: your_key
 
 ### 微信公众号读取失败
 
-微信公众号有叝爬机制，请使用：
+微信公众号有反爬机制，请使用：
 ```bash
 cd ~/.agent-reach/tools/wechat-article-for-ai && python3 main.py "文章URL"
 ```
@@ -182,4 +202,17 @@ cd ~/.agent-reach/tools/wechat-article-for-ai && python3 main.py "文章URL"
 - ✅ 技能目录自动识别 `~/.surfin-claw/skills/`
 - ✅ 移除 OpenClaw 专属配置依赖
 
-原项目：https://github.com/Panniantong/Agent-Reach
+---
+
+## 项目来源
+
+本项目 Fork 自：[Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach)
+
+原项目是一个开源的 AI Agent 互联网数据获取工具，支持 OpenClaw 等平台。
+
+---
+
+## 反馈与支持
+
+- **问题反馈**: https://github.com/anjun/Agent-Reach/issues
+- **原项目**: https://github.com/Panniantong/Agent-Reach
